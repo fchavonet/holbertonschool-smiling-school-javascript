@@ -60,6 +60,16 @@
   }
 }
 
+#carousel-track {
+  padding-bottom: 87px;
+  transition: transform 0.5s ease-in-out;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+  cursor: pointer;
+}
+
 /* Header / Hero Styles */
 
 .header {
@@ -329,10 +339,6 @@
 .section .card {
   border: 0;
   width: 16rem;
-}
-
-.popular .card {
-  padding-bottom: 87px;
 }
 
 .section .card-img-overlay {
