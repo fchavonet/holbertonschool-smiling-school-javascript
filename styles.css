@@ -21,6 +21,7 @@
 
 .body {
   font-family: var(--font-family-1);
+  background-color: var(--background-color);
 }
 
 .main-color {
@@ -38,6 +39,7 @@
 .btn:hover,
 .btn:active {
   opacity: var(--opacity-value);
+  transform: scale(1.05);
 }
 
 .loader {
@@ -60,9 +62,19 @@
   }
 }
 
-#carousel-track {
+#popular-carousel-track,
+#latest-carousel-track {
   padding-bottom: 87px;
   transition: transform 0.5s ease-in-out;
+}
+
+.card {
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.card:hover {
+  transform: scale(1.05);
 }
 
 .carousel-control-prev,
@@ -77,6 +89,7 @@
   background-color: var(--background-color);
   max-width: 100%;
   height: auto;
+  background-attachment: fixed;
   background-position-x: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -164,7 +177,8 @@
   height: 44px;
   font-size: 14px;
   border-radius: 22px;
-  filter: drop-shadow(0px 2px 20px rgba(0, 0, 0, 0.5));
+  transition: all 0.1s ease-in-out;
+  /* filter: drop-shadow(0px 2px 20px rgba(0, 0, 0, 0.5)); */
 }
 
 .hero-learn {

@@ -1,10 +1,15 @@
 $(document).ready(function () {
-  // Fetch data from the API for sections and display them in their respective carousels.
+  // Fetch and display quotes in the quotes carousel.
   const quotesURL = "https://smileschool-api.hbtn.info/quotes";
   fetchData(quotesURL, displayQuotes);
 
+  // Fetch and display popular tutorials in the corresponding carousel.
   const popularTutorialsURL = "https://smileschool-api.hbtn.info/popular-tutorials";
-  fetchData(popularTutorialsURL, displayCustomCarousel);
+  fetchData(popularTutorialsURL, (data) => displayCustomCarousel(data, "#popular-carousel-track", "#popular-prev-button", "#popular-next-button"));
+
+  // Fetch and display the latest videos in the corresponding carousel.
+  const latestVideosURL = "https://smileschool-api.hbtn.info/latest-videos";
+  fetchData(latestVideosURL, (data) => displayCustomCarousel(data, "#latest-carousel-track", "#latest-prev-button", "#latest-next-button"));
 
   // Show or hide the loader.
   function toggleLoader(show) {
@@ -86,14 +91,14 @@ $(document).ready(function () {
   }
 
   // Display custom carousel.
-  function displayCustomCarousel(data) {
+  function displayCustomCarousel(data, containerId, prevButtonId, nextButtonId) {
     // Validate data.
     if (!data || !Array.isArray(data)) {
       console.error("Invalid data received for carousel.");
       return;
     }
 
-    const $carouselTrack = $("#carousel-track");
+    const $carouselTrack = $(containerId);
     let currentIndex = 0;
 
     // Render the cards.
@@ -135,25 +140,40 @@ $(document).ready(function () {
     $carouselTrack.html(cardsHTML);
 
     // Add event listeners to navigation buttons.
-    $("#prev-button").on("click", () => moveCarousel(-1));
-    $("#next-button").on("click", () => moveCarousel(1));
+    $(prevButtonId).on("click", () => moveCarousel(-1));
+    $(nextButtonId).on("click", () => moveCarousel(1));
 
-    // Move carousel function.
     function moveCarousel(direction) {
       const cardWidth = $(".carousel-card").outerWidth(true);
+      const visibleCards = Math.floor($(".carousel-track-container").width() / cardWidth);
+      const totalCards = data.length;
 
       // Update current index based on direction.
       currentIndex += direction;
 
       // Infinite loop logic.
       if (currentIndex < 0) {
-        currentIndex = data.length - 4;
-      } else if (currentIndex > data.length - 4) {
         currentIndex = 0;
+      } else if (currentIndex > totalCards - visibleCards) {
+        currentIndex = totalCards - visibleCards;
       }
 
       // Apply the translation to the carousel track.
       $carouselTrack.css("transform", `translateX(-${currentIndex * cardWidth}px)`);
+
+      // Disable the "prev" button if at the beginning.
+      if (currentIndex === 0) {
+        $(prevButtonId).prop("disabled", true);
+      } else {
+        $(prevButtonId).prop("disabled", false);
+      }
+
+      // Disable the "next" button if at the end.
+      if (currentIndex >= totalCards - visibleCards) {
+        $(nextButtonId).prop("disabled", true);
+      } else {
+        $(nextButtonId).prop("disabled", false);
+      }
     }
 
     // Generate star ratings.
