@@ -11,6 +11,8 @@ $(document).ready(function () {
 	const latestVideosURL = "https://smileschool-api.hbtn.info/latest-videos";
 	fetchData(latestVideosURL, {}, (data) => displayCustomCarousel(data, "#latest-carousel-track", "#latest-prev-button", "#latest-next-button"));
 
+	populateDropdowns();
+
 	// Show or hide the loader.
 	function toggleLoader(show) {
 		const $loader = $(".loader");
@@ -230,6 +232,67 @@ $(document).ready(function () {
 		// Fetch and display the filtered courses.
 		fetchData("https://smileschool-api.hbtn.info/courses", { q: qVal, topic: topicVal, sort: sortVal }, displayCourses, "#courses-container");
 	}
+
+	function populateDropdowns() {
+		fetchData("https://smileschool-api.hbtn.info/courses", {}, function (data) {
+			if (!data) {
+				console.error("Invalid data received for dropdown.");
+				return;
+			}
+
+			// Format a string (replace underscores and capitalize).
+			function formatText(text) {
+				let formatted = text.replace("_", " ");
+
+				// Capitalize the first letter of each word.
+				formatted = formatted.replace(/(^|\s)\S/g, function (match) {
+					return match.toUpperCase();
+				});
+
+				return formatted;
+			}
+
+			// Populate "Topic" dropdown.
+			const topics = data.topics || [];
+			const $topicDropdown = $(".box2 .dropdown-menu");
+			let topicHTML = "";
+
+			topics.forEach(function (topic) {
+				const formattedTopic = formatText(topic);
+				topicHTML += `<a class="dropdown-item" href="#">${formattedTopic}</a>`;
+			});
+
+			$topicDropdown.html(topicHTML);
+
+			// Set the default value for the "Topic" dropdown.
+			if (topics.length > 0) {
+				const defaultTopic = formatText(topics[0]);
+				$(".box2 .dropdown-toggle span").text(defaultTopic);
+			}
+
+			// Populate "Sort By" dropdown.
+			const sorts = data.sorts || [];
+			const $sortDropdown = $(".box3 .dropdown-menu");
+			let sortHTML = "";
+
+			sorts.forEach(function (sort) {
+				const formattedSort = formatText(sort);
+				sortHTML += `<a class="dropdown-item" href="#">${formattedSort}</a>`;
+			});
+
+			$sortDropdown.html(sortHTML);
+
+			// Set the default value for the "Sort By" dropdown.
+			if (sorts.length > 0) {
+				const defaultSort = formatText(sorts[0]);
+				$(".box3 .dropdown-toggle span").text(defaultSort);
+			}
+
+			// Fetch and update courses once dropdowns are populated.
+			updateCourses();
+		});
+	}
+
 
 	// Refresh courses when typing in the search box.
 	$(".search-text-area").on("input", function () {
